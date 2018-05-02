@@ -14,7 +14,6 @@ CELL_SIZE = 32
 #                   directions
 #                WSENWSENWSENWSEN
 DEFAULT_CELL = 0b0000000000000000
-# ^ this will put the first at (0.0)
 #                |bt||s ||b ||w |
 WALL_BITS = 0b0000000000001111
 BACKTRACK_BITS = 0b1111000000000000
@@ -46,7 +45,7 @@ class Maze:
         self.h_cells = int(SCREEN_SIZE[1] / CELL_SIZE)
         self.total_cells = self.w_cells * self.h_cells
         self.maze_array = [DEFAULT_CELL] * self.total_cells
-        # game board size (0,0) -  (20,15)
+
         # Pygame set up
         pygame.init()
         self.screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -60,27 +59,29 @@ class Maze:
     def cell_neighbors(self, cell):
         """Logic for getting neighbors based on self.state."""
         # creates empty list of neighbors
-        x= self.x_y(cell)
-        y = self.x_y(cell)
-        neighbors_list = []
-        # set to four to check all 4 directions
+        x, y = self.x_y(cell)
+
+        neighbors = []
+        # for each direction
         for i in range(4):
-            # calculate a new cell  for x and y based off of the current cells position( in tuple x,y)
+            # calculate new cell from cell
             new_x = x + COMPASS[i][0]
             new_y = y + COMPASS[i][1]
-            # if the new cell is within the bounds defined as (0,0) -  (20,15)
+            # if new cell in that direction is within the bounds of maze (0,0) - (20,15)
             if self.cell_in_bounds(new_x, new_y):
+                # make s new cell by useing the tuple to conver into binary for  the next steps
                 new_cell = self.cell_index(new_x, new_y)
-                # if state is create and all of new cell's walls are up
+                # if state is create (basically a call to create another cell if)
                 if self.state == 'create':
                     if not (self.maze_array[new_cell] & WALL_BITS):
                         # add (new cell index, COMPASS index of direction) to neighbors
                         print("The current maze cellafter moving is: {}, {}".format(new_x,new_y))
-                        neighbors_list.append((new_cell, i))
-                # if state is solve and no wall between cell and new cell
+                        neighbors.append((new_cell, i))
+                # if state is solve this wil point to this cell as the one that is the solvedvalue
                 if self.state == 'solve':
+                    # if it's in the bounds of the matrix
                     if (self.maze_array[new_cell] & WALLS[i]):
-                        # if new cell not on solution or backtrack path
+                        # if new cell not on solution or backtrack path check for it for either being the backtrack or the solitions
                         if not (self.maze_array[new_cell] & (BACKTRACK_BITS | SOLUTION_BITS)):
                             # add (new cell index, COMPASS index of direction) to neighbors
                             neighbors.append((new_cell, i))
@@ -90,21 +91,24 @@ class Maze:
     # Update wall bits of from_cell and to_cell
     def connect_cells(self, from_cell, to_cell, compass_index):
         # TODO: Logic for updating cell bits
-        self.maze_array[from_cell] |= WALLS[compass_index]
+        # "knocks" down the walls
         self.maze_array[to_cell] |= OPPOSITE_WALLS[compass_index]
+        # sets the current arrays value to  one of the wallls from the new
+        self.maze_array[from_cell] |= WALLS[compass_index]
+        # draws the cells it self using the from cell and thae cvalue on compass index
         self.draw_connect_cells(from_cell, compass_index)
 
     # Visit a cell along a possible solution path
     # Update solution bits of from_cell and backtrack bits of to_cell
     def visit_cell(self, from_cell, to_cell, compass_index):
         # TODO: Logic for updating cell bits
-        # Clear the solution bits out of from_cell
+        # remove solution from the from_cell
         self.maze_array[from_cell] &= ~SOLUTION_BITS
-        # Update solutions bits using Walls[compass_index] shift 8 spaces to the left
+        #change solution bits using Walls[compass_inde] move8 spaces to the left
         self.maze_array[from_cell] |= (WALLS[compass_index] << 8)
-        # Update the backtrack bits shift 12 spaces to the left
+        # backtrack bits shift 12  to the leto keep track of it
         self.maze_array[to_cell] |= (OPPOSITE_WALLS[compass_index] << 12)
-
+        #draw  knock em down!
         self.draw_visited_cell(from_cell)
 
     # Backtrack from cell
@@ -124,7 +128,6 @@ class Maze:
 
     # Reconstruct path to start using backtrack bits
     def reconstruct_solution(self, cell):
-        self.draw_visited_cell(cell)
         # TODO: Logic for reconstructing solution path in BFS
         self.draw_visited_cell(cell)
         prev_cell_bits = (self.maze_array[cell] & BACKTRACK_BITS) >> 12
