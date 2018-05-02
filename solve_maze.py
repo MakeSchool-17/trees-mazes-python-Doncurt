@@ -5,9 +5,12 @@ import sys
 
 # Solve maze using Pre-Order DFS algorithm, terminate with solution
 def solve_dfs(m):
+    """mostly have to make use of refractoring the code in """
     # TODO: Implement solve_dfs
+    # not in bit form just yet but this wil make it easier
+    current = 0
+    visited = 0
     pass
-
 
 # Solve maze using BFS algorithm, terminate with solution
 def solve_bfs(m):
