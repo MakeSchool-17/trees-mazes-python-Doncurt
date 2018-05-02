@@ -4,6 +4,7 @@ import random
 
 # Create maze using Pre-Order DFS maze creation algorithm
 def create_dfs(m):
+    '''Couldnt figure this out so had help from Elmer, will study solution in depth ...not a pun I swear, Alan'''
     # TODO: Implement create_dfs
     stack = []
     # choose a cell index at random from the grid to be current cell
