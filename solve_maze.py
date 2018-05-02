@@ -4,14 +4,20 @@ import sys
 
 
 # Solve maze using Pre-Order DFS algorithm, terminate with solution
+# also will try to do this recursively
 def solve_dfs(m):
     """mostly have to make use of refractoring the code in """
     # TODO: Implement solve_dfs
     # not in bit form just yet but this wil make it easier
     current = 0
     visited = 0
-    pass
+    # stack as a list  for keeping strack of the visited cells
+    visited_stack= list()
 
+    # while the currrect cell in the loop hast gotten to be the value of the solution bit( the solutuon square in the matrix)
+    while current is not SOLUTION_BITS:
+
+    pass    
 # Solve maze using BFS algorithm, terminate with solution
 def solve_bfs(m):
     # TODO: Implement solve_bfs
